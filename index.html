@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      background-image: url('https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/c8189af5fb346d2ea181c0334a714395336e93389dcec40f25525cd75d5f669e6c5052eb326df6723583b094e68bfd69?pictype=scale&from=30013&version=3.3.3.3&fname=QQ%E6%88%AA%E5%9B%BE20230816204425.png&size=750');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-attachment: fixed;
+    }
+
+    .form-row {
+      margin-bottom: 10px;
+    }
+
+    .form-row label {
+      display: inline-block;
+      width: 120px;
+    }
+
+    .form-row input[type="text"],
+    .form-row textarea {
+      width: 250px;
+    }
+
+    .form-row textarea {
+      height: 100px;
+    }
+  </style>
+  
+  <link rel="icon" href="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/ea9611fbd2d00e68d02dfa5bea134d234adc21234516da211d90026e31b2c1c2d62ae52fa02e88fd6786b3a4ec686799?pictype=scale&from=30013&version=3.3.3.3&fname=b8b478ff51c2e2d28d556738a2cec97.png&size=750" type="image/png">
+  <title>QixiExcel - 人员信息录入</title>
+</head>
+
+<body>
+  <h1>QixiExcel</h1>
+
+  <div id="personForm">
+    <h2>人员信息</h2>
+    <div class="form-row">
+      <label for="name">姓名：</label>
+      <input type="text" id="name" required>
+    </div>
+
+    <div class="form-row">
+      <label for="address">住址：</label>
+      <input type="text" id="address" required>
+    </div>
+
+    <div class="form-row">
+      <label for="phone">电话号码：</label>
+      <input type="text" id="phone" required>
+    </div>
+
+    <div class="form-row">
+      <label for="education">学历：</label>
+      <input type="text" id="education" required>
+    </div>
+
+    <div class="form-row">
+      <label for="jobIntention">工作意向：</label>
+      <input type="text" id="jobIntention" required>
+    </div>
+
+    <div class="form-row">
+      <label for="employer">用工单位：</label>
+      <input type="text" id="employer" required>
+    </div>
+
+    <div class="form-row">
+      <label for="remark">备注：</label>
+      <textarea id="remark"></textarea>
+    </div>
+
+    <button onclick="addPerson()">添加人员</button>
+  </div>
+
+  <div id="personsContainer"></div>
+
+  <button id="exportButton" onclick="exportToExcel()" style="font-size: 20px; margin-top: 10px;">导出Excel</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script>
+  <script>
+    var persons = [];
+
+    function addPerson() {
+      var name = document.getElementById('name').value;
+      var address = document.getElementById('address').value;
+      var phone = document.getElementById('phone').value;
+      var education = document.getElementById('education').value;
+      var jobIntention = document.getElementById('jobIntention').value;
+      var employer = document.getElementById('employer').value;
+      var remark = document.getElementById('remark').value;
+
+      var person = {
+        '姓名': name,
+        '住址': address,
+        '电话号码': phone,
+        '学历': education,
+        '工作意向': jobIntention,
+        '用工单位': employer,
+        '备注': remark
+      };
+
+      persons.push(person);
+      clearForm();
+      displayPersons();
+      document.getElementById('exportButton').style.display = 'block';
+    }
+
+    function clearForm() {
+      document.getElementById('name').value = '';
+      document.getElementById('address').value = '';
+      document.getElementById('phone').value = '';
+      document.getElementById('education').value = '';
+      document.getElementById('jobIntention').value = '';
+      document.getElementById('employer').value = '';
+      document.getElementById('remark').value = '';
+    }
+
+    function displayPersons() {
+      var container = document.getElementById('personsContainer');
+      container.innerHTML = '';
+
+      for (var i = 0; i < persons.length; i++) {
+        var person = persons[i];
+
+        var personDiv = document.createElement('div');
+        personDiv.innerHTML = '<h2>人员信息</h2>' +
+          '<div class="form-row"><label>姓名：</label><input type="text" value="' + person['姓名'] + '"></div>' +
+          '<div class="form-row"><label>住址：</label><input type="text" value="' + person['住址'] + '"></div>' +
+          '<div class="form-row"><label>电话号码：</label><input type="text" value="' + person['电话号码'] + '"></div>' +
+          '<div class="form-row"><label>学历：</label><input type="text" value="' + person['学历'] + '"></div>' +
+          '<div class="form-row"><label>工作意向：</label><input type="text" value="' + person['工作意向'] + '"></div>' +
+          '<div class="form-row"><label>用工单位：</label><input type="text" value="' + person['用工单位'] + '"></div>' +
+          '<div class="form-row"><label>备注：</label><textarea>' + person['备注'] + '</textarea></div>';
+
+        container.appendChild(personDiv);
+      }
+    }
+
+    function exportToExcel() {
+      var data = [['姓名', '住址', '电话号码', '学历', '工作意向', '用工单位', '备注']];
+
+      for (var i = 0; i < persons.length; i++) {
+        var person = persons[i];
+        var rowData = [
+          person['姓名'],
+          person['住址'],
+          person['电话号码'],
+          person['学历'],
+          person['工作意向'],
+          person['用工单位'],
+          person['备注']
+        ];
+        data.push(rowData);
+      }
+
+      var workbook = XLSX.utils.book_new();
+      var worksheet = XLSX.utils.aoa_to_sheet(data);
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+      var excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      var blob = new Blob([excelData], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement('a');
+      link.href = url;
+      link.download = '人员信息.xlsx';
+      link.click();
+    }
+  </script>
+</body>
+
+</html>
